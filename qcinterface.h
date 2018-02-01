@@ -16,23 +16,7 @@ class XYZ{
     std::vector<double> x;
     std::vector<double> y;
     std::vector<double> z;
-
-};
-
-class QCCode{
-  public:
-    virtual double energy(XYZ) const =0;
-    virtual double dipole(XYZ) const =0;
-    virtual std::string qccodename() const =0;
-};
-
-
-class Mopac: public QCCode{
-  public:
-    double energy(XYZ) const;
-    double dipole(XYZ) const;
-    std::string qccodename() const;
-  private:
+    void set(const std::vector<double>&);
 
 };
 

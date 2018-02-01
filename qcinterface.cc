@@ -45,6 +45,22 @@ void Molecule::move(const XYZ& norm, const double& Q){
   }
 }
 
+void XYZ::set(const std::vector<double>& norm){
+  x.erase(x.begin(),x.end());
+  y.erase(y.begin(),y.end());
+  z.erase(z.begin(),z.end());
+  for(std::vector<double>::const_iterator i=norm.begin();
+      i!=norm.end(); ){
+    x.push_back(*i);
+    ++i;
+    y.push_back(*i);
+    ++i;
+    z.push_back(*i);
+    ++i;
+  }
+
+}
+
 
 void Molecule::reset(){
   Rp=Re;
@@ -85,28 +101,27 @@ void Molecule::mopac(const QCmethod& method){
   }
   // std::cout << wholefile << std::endl;
 
-  // example: TOTAL_ENERGY:EV=-0.38481113924567D+02
-  std::regex energy_regex("\n TOTAL_ENERGY:EV=([-\\+]?\\d\\.\\d*[DdEe][-\\+]?\\d*)\n");
+  // example: HEAT_OF_FORMATION:KCAL/MOL=-0.46806812790357D+02
+  std::regex energy_regex("\n HEAT_OF_FORMATION:KCAL/MOL=([-\\+]?\\d\\.\\d*[DdEe][-\\+]?\\d*)\n");
   std::smatch energy_match;
   if(std::regex_search(wholefile, energy_match, energy_regex)) {
-    std::cout << energy_match[1] <<std::endl;
+    // std::cout << energy_match[1] <<std::endl;
     line=energy_match[1];
     std::regex scientific("[Dd]");
     line=std::regex_replace(line, scientific,"e");
     std::stringstream ss;
     ss.str(line);
     ss>>energy;
-    std::cout << energy<< std::endl;
   }
   // example: DIPOLE:DEBYE=+0.11459444504425D-09
   // example: DIP_VEC:DEBYE[3]= +0.1145944450442D-09 +0.0000000000000D+00 +0.0000000000000D+00
   // std::regex dip_regex(" DIP_VEC:DEBYE\\[3\\]= .*\n");
-  std::regex dip_regex(" DIP_VEC:DEBYE\\[3\\]= ([-\\+]?\\d\\.\\d*[DdEe][-\\+]?\\d*) ([-\\+]?\\d\\.\\d*[DdEe][-\\+]?\\d*) ([-\\+]?\\d\\.\\d*[DdEe][-\\+]?\\d*)");
+  std::regex dip_regex("\n DIP_VEC:DEBYE\\[3\\]= ([-\\+]?\\d\\.\\d*[DdEe][-\\+]?\\d*) ([-\\+]?\\d\\.\\d*[DdEe][-\\+]?\\d*) ([-\\+]?\\d\\.\\d*[DdEe][-\\+]?\\d*)\n");
   std::smatch dip_match;
   if(std::regex_search(wholefile, dip_match, dip_regex)) {
-    std::cout << dip_match[1] <<std::endl;
-    std::cout << dip_match[2] <<std::endl;
-    std::cout << dip_match[3] <<std::endl;
+    // std::cout << dip_match[1] <<std::endl;
+    // std::cout << dip_match[2] <<std::endl;
+    // std::cout << dip_match[3] <<std::endl;
     dip.erase(dip.begin(),dip.end());
     for(int i =1; i<=3; ++i){
       line=dip_match[i];
@@ -116,11 +131,9 @@ void Molecule::mopac(const QCmethod& method){
       ss.str(line);
       double dipole;
       ss>>dipole;
-      std::cout << dipole<< std::endl;
+      // std::cout << dipole<< std::endl;
       dip.push_back(dipole);
     }
   }
-
-
-
 }
+
